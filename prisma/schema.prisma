@@ -8,11 +8,55 @@ datasource db {
 }
 
 model User {
-  id         Int      @id @default(autoincrement())
-  email      String   @unique
-  name       String
-  created_at DateTime @default(now())
-  updated_at DateTime @default(now())
+  id              Int              @id @default(autoincrement())
+  email           String           @unique
+  name            String
+  created_at      DateTime         @default(now())
+  updated_at      DateTime         @default(now())
+  animal_listings AnimalAdoption[]
 
   @@map("users")
+}
+
+model Animal {
+  id       Int              @id @default(autoincrement())
+  name     String
+  breed    String
+  type     AnimalType[]
+  city     String
+  state    String
+  adopted  Boolean
+  listings AnimalAdoption[]
+
+  @@map("animals")
+}
+
+model Type {
+  id   Int          @id @default(autoincrement())
+  name String
+  type AnimalType[]
+
+  @@map("types")
+}
+
+model AnimalType {
+  animalId Int
+  typeId   Int
+
+  animal Animal @relation(fields: [animalId], references: [id])
+  type   Type   @relation(fields: [typeId], references: [id])
+
+  @@id([animalId, typeId])
+  @@map("animal_types")
+}
+
+model AnimalAdoption {
+  id         Int      @id @default(autoincrement())
+  animal     Animal   @relation(fields: [animalId], references: [id])
+  animalId   Int
+  listed_by  User     @relation(fields: [listedById], references: [id])
+  listedById Int
+  created_at DateTime @default(now())
+
+  @@map("animal_adoptions")
 }
